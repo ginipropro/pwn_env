@@ -26,6 +26,7 @@ cd ./pwndbg && \
 ./setup.sh && \
 cd $HOME/Desktop/pwn_env && \
 git clone https://${HUB_DOMAIN}/hugsy/gef.git && \
+git clone https://${HUB_DOMAIN}/longld/peda.git && \
 git clone https://${HUB_DOMAIN}/RoderickChan/Pwngdb.git && \
 git clone https://${HUB_DOMAIN}/Gallopsled/pwntools && \
 pip3 install --upgrade --editable ./pwntools && \
