@@ -2,7 +2,6 @@
 # 环境变量
 export DEBIAN_FRONTEND=noninteractive
 export TZ=Asia/Shanghai
-export HUB_DOMAIN=github.com
 # 基础包
 sudo apt update && sudo apt install -y --fix-missing python3 python3-pip python3-dev lib32z1 \
 xinetd curl gcc gdb gdbserver g++ git libssl-dev libffi-dev build-essential tmux \
@@ -19,70 +18,72 @@ sudo gem install one_gadget seccomp-tools
 # python包
 python3 -m pip install --upgrade pip && \
 pip3 install ropper capstone unicorn keystone-engine z3-solver qiling lief libnum pycryptodome angr trash-cli && \
-cd $HOME/Desktop/pwn_env 
-export HUB_DOMAIN=github.com
-git clone https://${HUB_DOMAIN}/pwndbg/pwndbg && \
+cd $HOME/pwn_env 
+git clone https://github.com/pwndbg/pwndbg && \
 cd ./pwndbg && \
 ./setup.sh && \
-cd $HOME/Desktop/pwn_env && \
-git clone https://${HUB_DOMAIN}/hugsy/gef.git && \
-git clone https://${HUB_DOMAIN}/longld/peda.git && \
-git clone https://${HUB_DOMAIN}/RoderickChan/Pwngdb.git && \
-git clone https://${HUB_DOMAIN}/Gallopsled/pwntools && \
-pip3 install --upgrade --editable ./pwntools && \
-git clone https://${HUB_DOMAIN}/RoderickChan/pwncli.git && \
+cd $HOME/pwn_env && \
+git clone https://github.com/hugsy/gef.git && \
+git clone https://github.com/longld/peda.git && \
+git clone https://github.com/RoderickChan/Pwngdb.git && \
+git clone https://github.com/Gallopsled/pwntools && \
+sudo pip3 install --upgrade --editable ./pwntools && \
+git clone https://github.com/RoderickChan/pwncli.git && \
 pip3 install --upgrade --editable ./pwncli && \
-git clone https://${HUB_DOMAIN}/marin-m/vmlinux-to-elf.git && \
-git clone https://${HUB_DOMAIN}/JonathanSalwan/ROPgadget.git && \
-python3 ./ROPgadget/setup.py install
+git clone https://github.com/marin-m/vmlinux-to-elf.git && \
+git clone https://github.com/JonathanSalwan/ROPgadget.git && \
+sudo python3 ./ROPgadget/setup.py install
 
 # 安装patchelf和r2
-git clone https://${HUB_DOMAIN}/NixOS/patchelf.git && \
+git clone https://github.com/NixOS/patchelf.git && \
 cd ./patchelf && \
 ./bootstrap.sh && \
 ./configure && \
 make && \
 sudo make install && \
-cd $HOME/Desktop/pwn_env && \
+cd $HOME/pwn_env && \
 export version=$(curl -s https://api.github.com/repos/radareorg/radare2/releases/latest | grep -P '"tag_name": "(.*)"' -o| awk '{print $2}' | awk -F"\"" '{print $2}') && \
-wget https://${HUB_DOMAIN}/radareorg/radare2/releases/download/${version}/radare2_${version}_amd64.deb && \
+wget https://github.com/radareorg/radare2/releases/download/${version}/radare2_${version}_amd64.deb && \
 sudo dpkg -i radare2_${version}_amd64.deb && rm radare2_${version}_amd64.deb
 
 
 # 配置文件
 cat > ~/.tmux.conf << "EOF"
-set -g prefix C-a #
-unbind C-b # C-b即Ctrl+b键，unbind意味着解除绑定
-bind C-a send-prefix # 绑定Ctrl+a为新的指令前缀
+set -g prefix C-a
+unbind C-b
+bind C-a send-prefix
 
-# 设置保存的buffer大小
-set -g history-limit 5000
-# 关闭自动重命名
-setw -g automatic-rename off
-setw -g allow-rename off
+set-option -g prefix2 `
+set-option -g mouse on
 
-# 使用vi风格
-setw -g mode-keys vi
-
-# 从tmux v1.6版起，支持设置第二个指令前缀
-set-option -g prefix2 ` # 设置一个不常用的`键作为指令前缀，按键更快一些
-#set-option -g mouse on # 开启鼠标支持
-# 修改分屏快捷键
 unbind '"'
 bind - splitw -v -c '#{pane_current_path}' # 垂直方向新增面板，默认进入当前目录
 unbind %
-bind | splitw -h -c '#{pane_current_path}' # 水平方向新增面板，默认进入当前目录
+bind = splitw -h -c '#{pane_current_path}' # 水平方向新增面板，默认进入当前目录
 
-# 设置面板大小调整快捷键
+# 绑定hjkl键为面板切换的上下左右键
+bind -r k select-pane -U # 绑定k为↑
+bind -r j select-pane -D # 绑定j为↓
+bind -r h select-pane -L # 绑定h为←
+bind -r l select-pane -R # 绑定l为→
+
+set -g default-terminal "screen-256color"
+set -g history-limit 5000
+
 bind j resize-pane -D 10
 bind k resize-pane -U 10
 bind h resize-pane -L 10
 bind l resize-pane -R 10
+
+setw -g automatic-rename off
+setw -g allow-rename off
+
+setw -g mode-keys vi
 EOF
 
 # 安装musl
 sudo apt install musl-dev musl-tools
-cd $HOME/Desktop/pwn_env
+cd $HOME/pwn_env
 wget https://musl.libc.org/releases/musl-1.2.3.tar.gz
 tar -xvzf musl-1.2.3.tar.gz
 cd musl-1.2.3
@@ -93,9 +94,9 @@ sudo make install
 # 安装zsh
 export HUB_DOMAIN=github.com
 sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" && \
-git clone https://${HUB_DOMAIN}/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions && \
-git clone https://${HUB_DOMAIN}/zsh-users/zsh-syntax-highlighting $ZSH_CUSTOM/plugins/zsh-syntax-highlighting && \
-git clone https://${HUB_DOMAIN}/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
+git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions && \
+git clone https://github.com/zsh-users/zsh-syntax-highlighting $ZSH_CUSTOM/plugins/zsh-syntax-highlighting && \
+git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
 
 
 cat > ~/.zshrc << "EOF"
